@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -8,21 +8,39 @@ import { FormsModule } from '@angular/forms';
 })
 export class QuestionnaireFormComponent implements OnInit {
 
-  nom: string
-  prenom: string;
-  mail: string;
+  nomEleve: string
+  prenomEleve: string;
+  mailEleve: string;
 
-  values = '';
+  nomFormateur: string;
+  nomFormation: string;
 
-  test = 'bonjour';
+  raisonSuiviRadio: string;
+
+  formulaireEnvove: boolean;
 
   constructor() { }
 
   ngOnInit() {
-
+    this.formulaireEnvove = false;
   }
 
-  onKeyup(event: any) {
-    this.values += event.target.value + ' | ';
+  diagnostic() {
+    return this.nomEleve + ' ' + this.prenomEleve + ' ' + this.mailEleve + ' ' + this.nomFormateur + ' ' + this.nomFormation;
   }
+
+  // S'occupe de reset le formulaire, de faire les éventuelles dernières vérifications restantes, et ... ?
+  onSubmit(form: NgForm) {
+    // Reset de tous les champs du formulaire
+    this.formulaireEnvove = true;
+
+    form.reset();
+    //Autre chose ... ?
+  }
+
+  storeValue(valeur) {
+    console.log('Méthode appelée.');
+    this.raisonSuiviRadio = valeur;
+  }
+
 }

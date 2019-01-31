@@ -1,86 +1,116 @@
 <div class="container">
   <h1 style="font-weight: bold"> Questionnaire d'évaluation à chaud </h1>
 
-  <form autocomplete="off">
+  <form autocomplete="off" name="formQuestionnaire" #formulaire="ngForm" (ngSubmit)="onSubmit(formulaire)">
+
+    <!-- CHAMP ENVOI REUSSI -->
+    <div style="width: 18%" class="alert alert-info" *ngIf="formulaireEnvove === true">
+      Formulaire bien envoyé.
+    </div>
 
     <!-- CHAMP NOM PRENOM -->
-    <div class="collapse in" id="collapseExample">
+    <div class="collapse in" id="collapseSensi">
       <div class="form-group row">
         <div class="col-xs-2">
           <label for="nomInput">Nom</label>
-          <input name="nom" [(ngModel)]="nom" #leNom="ngModel" type="text" class="form-control" id="nomInput">
+          <input class="form-control" type="text" id="nomInput" name="nom" [(ngModel)]="nomEleve" #nom="ngModel" required>
         </div>
         <div class="col-xs-2">
           <label for="prenomInput">Prénom</label>
-          <input name="prenom" [(ngModel)]="prenom" #lePrenom="ngModel" type="text" class="form-control" id="prenomInput">
+          <input class="form-control" type="text" id="prenomInput" name="prenom" [(ngModel)]="prenomEleve" #prenom="ngModel" required>
         </div>
       </div>
-      <div *ngIf="leNom.value.length < 3 && leNom.value.length >= 1" [hidden]="leNom.value.length === 0" class="alert alert-info"
-           style="width: 40%">
-        Le nom doit faire au moins 2 caractères.
+
+      <!-- VALIDATION PRENOM NOM -->
+      <div *ngIf="nom.invalid && (nom.touched || nom.dirty)">
+        <div style="width: 17%; padding: 10px" class="alert alert-danger">
+          Vous devez entrer un nom.
+        </div>
       </div>
-      <div *ngIf="lePrenom.value.length < 3 && lePrenom.value.length >= 1" [hidden]="lePrenom.value.length === 0" class="alert alert-info"
-           style="width: 40%">
-        Le prénom doit faire au moins 2 caractères.
+      <div *ngIf="prenom.invalid && (prenom.touched || prenom.dirty)">
+        <div style="width: 20%; padding: 10px" class="alert alert-danger">
+          Vous devez entrer un prénom.
+        </div>
       </div>
     </div>
 
     <!-- BOUTON D'ANONYMAT -->
-    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
-            aria-expanded="false" aria-controls="collapseExample">
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseSensi"
+            aria-expanded="false" aria-controls="collapseSensi">
       Questionnaire anonyme
     </button> <br>
 
-    <br>
-
     <!-- CHAMP EMAIL -->
-    <div class="form-group row" id="email">
+    <div class="form-group row">
       <div class="col-xs-3">
-        <label for="emailInput">Adresse e-mail</label>
-        <input name="leMail" [(ngModel)]="mail" type="email" class="form-control" id="emailInput" placeholder="adresse@example.com"
-               #leMail="ngModel">
+        <label for="emailInputId">Adresse e-mail</label>
+        <input class="form-control" type="email" name="mailEleve" id="emailInputId"
+               [(ngModel)]="mailEleve" #email="ngModel" required placeholder="adresse@example.com">
         <small id="emailHelp" class="form-text">Votre adresse sera utilisée pour vous envoyer
           un questionnaire "à froid" dans 3 mois.</small>
       </div>
     </div>
-    <!-- MESSAGES D'ERREURS CHAMP EMAIL -->
-    <div *ngIf="leMail.value" class="alert alert-info" style="width: 50%">
-      Le mail doit faire au moins 7 caractères.
+    <!-- VALIDATION CHAMP EMAIL -->
+    <div *ngIf="email.invalid && (email.touched || email.dirty)">
+      <div style="width: 25%; padding: 10px" class="alert alert-danger">
+        <div *ngIf="email.errors?.required">
+          Vous devez entrer une adresse e-mail.
+        </div>
+        <!-- Autres types d'erreur ... ? -->
+      </div>
     </div>
 
     <!-- CHAMP NOMS FORMATEUR ET FORMATION -->
     <div class="form-group row">
       <div class="col-xs-3">
-        <b>Nom du formateur</b> <input type="text" class="form-control" id="formateurInput" placeholder="Casanova">
+        <b>Nom du formateur</b>
+        <input class="form-control" type="text" id="nomFormateurId" name="nomFormateur" [(ngModel)]="nomFormateur"
+                        #formateur="ngModel" required>
       </div>
       <div class="col-xs-4">
-        <b>Intitulé de la formation</b> <input type="text" class="form-control" id="nomFormationInput" placeholder="Libre Office Writter ...">
+        <b>Intitulé de la formation</b>
+        <input class="form-control" type="text" id="nomFormationId" name="nomFormation" [(ngModel)]="nomFormation"
+                        #formation="ngModel" required>
       </div>
     </div>
+    <!-- VALIDATION FORMATEUR FORMATION -->
+    <div style="width: 25%; padding: 10px" class="alert alert-danger"
+         *ngIf="formateur.invalid && (formateur.touched || formateur.dirty)">
+        Vous devez rentrer un nom de formateur.
+    </div>
+    <div style="width: 25%; padding: 10px" class="alert alert-danger"
+         *ngIf="formation.invalid && (formation.touched || formation.dirty)">
+        Vous devez rentrer un intitulé de formation.
+    </div>
+
+    <button class="btn btn-success" type="submit" [disabled]="formulaire.form.invalid" name="btnSubmit" id="btnSubmit" >
+      Envoyer
+    </button>
 
     <!-- RADIO RAISON SUIVI DE LA FORMATION -->
+    <p> Valeur radioSuivi : {{ raisonSuiviRadio }}</p>
     <b>Pour quelles raisons avez-vous suivi cette formation ?</b>
     <div class="form-group" id="raisonSuiviFormation">
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio1" value="raisonSuiviRadio1" checked>
+        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio1" checked>
         <label class="form-check-label" for="raisonSuiviRadio1">
           <span style="font-weight: normal">Formation prévue par l'entreprise</span>
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio2" value="raisonSuiviRadio2" checked>
+        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio2">
         <label class="form-check-label" for="raisonSuiviRadio2">
           <span style="font-weight: normal">Renforcer des compétences dans votre poste</span>
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio3" value="raisonSuiviRadio3" checked>
+        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio3">
         <label class="form-check-label" for="raisonSuiviRadio3">
           <span style="font-weight: normal">Acquérir de nouvelles compétences</span>
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio4" value="raisonSuiviRadio4" checked>
+        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio4" >
         <label class="form-check-label" for="raisonSuiviRadio4">
           <span style="font-weight: normal">Pour une évolution professionnelle</span>
         </label>
@@ -91,7 +121,7 @@
     <div class="form-group" id="satisfactionFormation">
       <b>A l'issu de ce stage, êtes-vous ?</b> <br>
       <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio1" value="satisfactionRadio1">
+        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio1" value="satisfactionRadio1" checked>
         <label class="form-check-label" for="satisfactionRadio1">
           <span style="font-weight: normal"> Très satisfait </span>
         </label>
@@ -128,7 +158,7 @@
         <label for="insatisfactionDetails">En cas d’insatisfaction, pourquoi cette formation n’a pas répondue à vos besoins ?</label>
         <textarea class="form-control" id="insatisfactionDetails" rows="3"></textarea>
       </div>
-    </div> <br>
+    </div>
 
     <!-- TEXTAREA DETAILS OBJECTIFS CLAIREMENT DEFINIS -->
     <div class="form-group row">
@@ -358,7 +388,7 @@
       </div>
     </div>
 
-    <button type="submit" name="btnSubmit" id="btnSubmit" class="btn btn-success"> Envoyer </button> <br>
+     <br>
   </form>
 </div>
 
