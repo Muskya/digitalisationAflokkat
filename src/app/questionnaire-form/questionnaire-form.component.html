@@ -88,67 +88,22 @@
     </button>
 
     <!-- RADIO RAISON SUIVI DE LA FORMATION -->
-    <p> Valeur radioSuivi : {{ raisonSuiviRadio }}</p>
-    <b>Pour quelles raisons avez-vous suivi cette formation ?</b>
-    <div class="form-group" id="raisonSuiviFormation">
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio1" checked>
-        <label class="form-check-label" for="raisonSuiviRadio1">
-          <span style="font-weight: normal">Formation prévue par l'entreprise</span>
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio2">
-        <label class="form-check-label" for="raisonSuiviRadio2">
-          <span style="font-weight: normal">Renforcer des compétences dans votre poste</span>
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio3">
-        <label class="form-check-label" for="raisonSuiviRadio3">
-          <span style="font-weight: normal">Acquérir de nouvelles compétences</span>
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="raisonSuiviRadio" id="raisonSuiviRadio4" >
-        <label class="form-check-label" for="raisonSuiviRadio4">
-          <span style="font-weight: normal">Pour une évolution professionnelle</span>
-        </label>
+    <p> Valeur radioSuivi : {{ reponsesRadio['suiviFormation'] }}</p>
+    <b>{{questionsRadio['suiviFormation']}}</b>
+    <div class="form-group">
+      <div *ngFor="let options of radioRaisonFormation" class="form-check">
+          <input (change)="storeValue($event, 'suiviFormation')" class="form-check-input" type="radio" value="{{options}}" name="raisonSuiviRadio">
+          <span style="font-weight: normal"> {{options}}</span>
       </div>
     </div>
 
     <!-- RADIO SATISFACTION DE LA FORMATION -->
     <div class="form-group" id="satisfactionFormation">
-      <b>A l'issu de ce stage, êtes-vous ?</b> <br>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio1" value="satisfactionRadio1" checked>
-        <label class="form-check-label" for="satisfactionRadio1">
-          <span style="font-weight: normal"> Très satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio2" value="satisfactionRadio2">
-        <label class="form-check-label" for="satisfactionRadio2">
-          <span style="font-weight: normal"> Satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio3" value="satisfactionRadio3">
-        <label class="form-check-label" for="satisfactionRadio3">
-          <span style="font-weight: normal"> Assez satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio4" value="satisfactionRadio4">
-        <label class="form-check-label" for="satisfactionRadio4">
-          <span style="font-weight: normal"> Insatisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="satisfactionRadio" id="satisfactionRadio5" value="satisfactionRadio5">
-        <label class="form-check-label" for="satisfactionRadio5">
-          <span style="font-weight: normal"> Très insatisfait </span>
-        </label>
+      <b>{{questionsRadio['satisfactionFormation']}}</b> <br>
+      <div *ngFor="let satisfaction of radioSatisfactionFormation" class="checkbox-inline">
+        <input (change)="storeValue($event, 'satisfactionFormation')" class="form-check-input" type="radio"
+               name="satisfactionRadio" value={{satisfaction}}>
+        <span style="font-weight: normal"> {{satisfaction}} </span>
       </div>
     </div>
 
@@ -156,7 +111,8 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <label for="insatisfactionDetails">En cas d’insatisfaction, pourquoi cette formation n’a pas répondue à vos besoins ?</label>
-        <textarea class="form-control" id="insatisfactionDetails" rows="3"></textarea>
+        <textarea class="form-control" id="insatisfactionDetails" rows="3" name="areaInsatisfaction"
+                  [(ngModel)]="reponsesTextarea['areaInsatisfaction']" #areaInsatisfaction="ngModel" required> </textarea>
       </div>
     </div>
 
@@ -164,7 +120,8 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <label for="objectifsClairs">Selon vous, les objectifs de la formation ont- ils été clairement formulés en début de session ?</label>
-        <textarea class="form-control" id="objectifsClairs" rows="3"></textarea>
+        <textarea class="form-control" id="objectifsClairs" rows="3" name="areaObjectifs"
+        [(ngModel)]="reponsesTextarea['areaObjectifs']" #areaObjectifs="ngModel" required></textarea>
       </div>
     </div>
 
@@ -172,7 +129,8 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <label for="plusUtile">Qu'est-ce qui vous a paru le plus utile pendant cette formation?</label>
-        <textarea class="form-control" id="plusUtile" rows="3"></textarea>
+        <textarea class="form-control" id="plusUtile" rows="3" name="areaPlusUtile"
+        [(ngModel)]="reponsesTextarea['areaPlusUtile']" #areaPlusUtile="ngModel" required></textarea>
       </div>
     </div>
 
@@ -180,12 +138,13 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <label for="nonInteret">Quels points n’ont pas retenu votre intérêt ?</label>
-        <textarea class="form-control" id="nonInteret" rows="3"></textarea>
+        <textarea class="form-control" id="nonInteret" rows="3" name="areaInterets"
+        [(ngModel)]="reponsesTextarea['areaInterets']" #areaInterets="ngModel" required></textarea>
       </div>
     </div>
 
     <!-- RADIO APPROFONDISSEMENTS FORMATION -->
-    <b>Cette formation mérite-elle des approfondissements ?</b>
+    <b>{{questionsRadio['approfondissementFormation']}}</b>
     <div class="form-group" id="approfFormation">
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="approfRadio" id="approfFormation1" value="approfFormation1">
@@ -203,158 +162,56 @@
     </div>
 
     <!-- RADIO DUREE FORMATION -->
-    <b>Que pensez-vous de la durée de la formation ?</b>
-    <div class="form-group" id="dureeformationRadio">
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="dureeRadio" id="dureeRadio1" value="dureeRadio1">
-        <label class="form-check-label" for="dureeRadio1">
-          <span style="font-weight: normal"> Trop longue </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="dureeRadio" id="dureeRadio2" value="dureeRadio2">
-        <label class="form-check-label" for="dureeRadio2">
-          <span style="font-weight: normal"> Correct </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="dureeRadio" id="dureeRadio3" value="dureeRadio3">
-        <label class="form-check-label" for="dureeRadio3">
-          <span style="font-weight: normal"> Trop courte </span>
-        </label>
+    <b>{{questionsRadio['dureeFormation']}}</b>
+    <div class="form-group">
+      <div *ngFor="let options of radioDureeFormation" class="form-check">
+        <input (change)="storeValue($event, 'dureeFormation')" class="form-check-input" type="radio" value="{{options}}" name="raisonSuiviRadio">
+        <span style="font-weight: normal"> {{options}}</span>
       </div>
     </div>
 
     <!-- RADIO ECOUTE PROFESSEUR -->
-    <b>Comment jugez-vous la capacité du formateur à répondre clairement à vos interrogations ?</b>
-    <div class="form-group" id="interrogationsProfRadio">
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="interrosRadio" id="interrosRadio1" value="interrosRadio1">
-        <label class="form-check-label" for="interrosRadio1">
-          <span style="font-weight: normal"> Très satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="interrosRadio" id="interrosRadio2" value="interrosRadio2">
-        <label class="form-check-label" for="interrosRadio2">
-          <span style="font-weight: normal"> Satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="interrosRadio" id="interrosRadio3" value="interrosRadio3">
-        <label class="form-check-label" for="interrosRadio3">
-          <span style="font-weight: normal"> Assez satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="interrosRadio" id="interrosRadio4" value="interrosRadio4">
-        <label class="form-check-label" for="interrosRadio4">
-          <span style="font-weight: normal"> Insatisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="interrosRadio" id="interrosRadio5" value="interrosRadio5">
-        <label class="form-check-label" for="interrosRadio5">
-          <span style="font-weight: normal"> Très insatisfait </span>
-        </label>
-      </div>
+    <b>{{questionsRadio['ecouteFormation']}}</b>
+    <div class="form-group">
+        <div *ngFor="let satisfaction of radioSatisfactionFormation" class="checkbox-inline">
+          <input (change)="storeValue($event, 'ecouteFormation')" class="form-check-input" type="radio"
+                 name="satisfactionRadio" value={{satisfaction}}>
+          <span style="font-weight: normal">{{satisfaction}}</span>
+        </div>
     </div>
 
     <!-- RADIO COMPETENCES ENSEIGNEES PROFESSEUR -->
-    <b>Comment évaluez-vous les compétences démontrées par le formateur ?</b>
-    <div class="form-group" id="compentencesProfRadio">
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="competencesProfRadio" id="competencesProfRadio1" value="competencesProfRadio1">
-        <label class="form-check-label" for="competencesProfRadio1">
-          <span style="font-weight: normal"> Très satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="competencesProfRadio" id="competencesProfRadio2" value="competencesProfRadio2">
-        <label class="form-check-label" for="competencesProfRadio2">
-          <span style="font-weight: normal"> Satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="competencesProfRadio" id="competencesProfRadio3" value="competencesProfRadio3">
-        <label class="form-check-label" for="competencesProfRadio3">
-          <span style="font-weight: normal"> Assez satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="competencesProfRadio" id="competencesProfRadio4" value="competencesProfRadio4">
-        <label class="form-check-label" for="competencesProfRadio4">
-          <span style="font-weight: normal"> Insatisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="competencesProfRadio" id="competencesProfRadio5" value="competencesProfRadio5">
-        <label class="form-check-label" for="competencesProfRadio5">
-          <span style="font-weight: normal"> Très insatisfait </span>
-        </label>
-      </div>
+    <b>{{questionsRadio['competencesFormation']}}</b>
+    <div class="form-group">
+        <div *ngFor="let satisfaction of radioSatisfactionFormation" class="checkbox-inline">
+          <input (change)="storeValue($event, 'competencesFormation')" class="form-check-input" type="radio"
+                 name="satisfactionRadio" value={{satisfaction}}>
+          <span style="font-weight: normal">{{satisfaction}}</span>
+        </div>
     </div>
 
     <!-- RADIO ARTICULATION ENTRE PHASES -->
-    <b>Que pensez-vous de l’articulation entre les phases de pratique et de théorie ?</b>
-    <div class="form-group" id="articulationPhasesRadio">
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="articulationRadio" id="articulationRadio1" value="articulationRadio1">
-        <label class="form-check-label" for="articulationRadio1">
-          <span style="font-weight: normal"> Trop de pratique </span>
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="articulationRadio" id="articulationRadio2" value="articulationRadio2">
-        <label class="form-check-label" for="articulationRadio2">
-          <span style="font-weight: normal"> Equilibré </span>
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="articulationRadio" id="articulationRadio3" value="articulationRadio3">
-        <label class="form-check-label" for="articulationRadio3">
-          <span style="font-weight: normal"> Trop de théorie </span>
-        </label>
+    <b>{{questionsRadio['phasesFormation']}}</b>
+    <div class="form-group">
+      <div *ngFor="let options of radioPhasesFormation" class="form-check">
+        <input (change)="storeValue($event, 'phasesFormation')" class="form-check-input" type="radio" value="{{options}}"
+               name="raisonSuiviRadio">
+        <span style="font-weight: normal"> {{options}}</span>
       </div>
     </div>
 
     <!-- RADIO ENVIRONNEMENT DU STAGE -->
-    <b>Que pouvez-vous dire sur l’environnement du stage ( locaux, installation du lieu, ... )</b>
-    <div class="form-group" id="environnementStageRadio">
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="environnementRadio" id="environnementRadio1" value="environnementRadio1">
-        <label class="form-check-label" for="environnementRadio1">
-          <span style="font-weight: normal"> Très satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="environnementRadio" id="environnementRadio2" value="environnementRadio2">
-        <label class="form-check-label" for="environnementRadio2">
-          <span style="font-weight: normal"> Satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="environnementRadio" id="environnementRadio3" value="environnementRadio3">
-        <label class="form-check-label" for="environnementRadio3">
-          <span style="font-weight: normal"> Assez satisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="environnementRadio" id="environnementRadio4" value="environnementRadio4">
-        <label class="form-check-label" for="environnementRadio4">
-          <span style="font-weight: normal"> Insatisfait </span>
-        </label>
-      </div>
-      <div class="checkbox-inline">
-        <input class="form-check-input" type="radio" name="environnementRadio" id="environnementRadio5" value="environnementRadio5">
-        <label class="form-check-label" for="environnementRadio5">
-          <span style="font-weight: normal"> Très insatisfait </span>
-        </label>
+    <b>{{questionsRadio['environnementFormation']}}</b>
+    <div class="form-group">
+      <div *ngFor="let satisfaction of radioSatisfactionFormation" class="checkbox-inline">
+        <input (change)="storeValue($event, 'environnementFormation')" class="form-check-input" type="radio"
+               name="satisfactionRadio" value={{satisfaction}}>
+        <span style="font-weight: normal">{{satisfaction}}</span>
       </div>
     </div>
 
     <!-- RADIO QUALITE OUTILS PEDAGOGIQUES -->
-    <b>La qualité des outils pédagogiques à disposition vous semble t- elle efficace ?</b>
+    <b>{{questionsRadio['outilsFormation']}}</b>
     <div class="form-group" id="outilsPedagogiques">
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="outilsPedagogiques" id="outilsPedagogiques1" value="outilsPedagogiques1">
@@ -376,7 +233,8 @@
       <div class="col-xs-7">
         <label for="changementsFormation">Quelles changements pouvons nous faire pour permettre d’améliorer ou de rendre plus
           agréable cette formation ?</label>
-        <textarea class="form-control" id="changementsFormation" rows="3"></textarea>
+        <textarea class="form-control" id="changementsFormation" rows="3" name="areaChangements"
+        [(ngModel)]="reponsesTextarea['areaChangements']" #areaChangements="ngModel" required></textarea>
       </div>
     </div>
 
@@ -384,11 +242,10 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <label for="recommandationFormation">Recommanderiez-vous cette formation à un collègue ?</label>
-        <textarea class="form-control" id="recommandationFormation" rows="3"></textarea>
+        <textarea class="form-control" id="recommandationFormation" rows="3" name="areaRecommandations"
+        [(ngModel)]="reponsesTextarea['areaRecommandations']" #areaRecommandations="ngModel" required></textarea>
       </div>
     </div>
-
-     <br>
   </form>
 </div>
 
