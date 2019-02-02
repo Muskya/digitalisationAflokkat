@@ -15,21 +15,32 @@ export class QuestionnaireFormComponent implements OnInit {
   nomFormateur: string;
   nomFormation: string;
 
+  //Objet contenant la réponse (Oui/Non) + Détails si il y a des radios
+  //spéciaux du formulaire.
+  approfondissementsRadio = {};
+  outilsRadio = {};
 
+  //Champs contenant les différents choix possibles pour les radios du formulaire
   radioRaisonFormation = [];
   radioDureeFormation = [];
   radioPhasesFormation = [];
   radioSatisfactionFormation = [];
+  radioApprofondissementsFormation = [];
+  radioOutilsFormation = [];
 
+  //Questions + Réponses des radios du formulaire
   reponsesRadio = {};
   questionsRadio = {};
+  questionsReponsesRadio = {};
 
-  questionsTextarea = [];
+  //Questions + Réponses des textarea du formulaire
+  questionsTextarea = {};
   reponsesTextarea = {};
 
   formulaireEnvove: boolean;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
     this.formulaireEnvove = false;
@@ -39,7 +50,7 @@ export class QuestionnaireFormComponent implements OnInit {
       'Assez satisfait',
       'Insatisfait',
       'Très insatisfait'
-      ];
+    ];
     this.radioRaisonFormation = [
       'Formation prévue par l\'entreprise',
       'Renforcer des compétences dans votre poste',
@@ -56,6 +67,14 @@ export class QuestionnaireFormComponent implements OnInit {
       'Equilibré',
       'Trop de théorie'
     ];
+    this.radioApprofondissementsFormation = [
+      'Oui, lesquels ?',
+      'Non'
+    ];
+    this.radioOutilsFormation = [
+      'Oui',
+      'Non, lesquels ?'
+    ];
     this.questionsRadio = {
       'suiviFormation': 'Pour quelle raison avez-vous suivi cette formation ?',
       'satisfactionFormation': 'A l\'issu de ce stage, êtes-vous ?',
@@ -66,6 +85,48 @@ export class QuestionnaireFormComponent implements OnInit {
       'phasesFormation': 'Que pensez-vous de l’articulation entre les phases de pratique et de théorie ?',
       'environnementFormation': 'Que pouvez-vous dire sur l’environnement du stage ( locaux, installation du lieu, ... )',
       'outilsFormation': 'La qualité des outils pédagogiques à disposition vous semble t- elle efficace ?'
+    };
+
+    //Coupler les this.questionsRadio et this.reponsesRadio dans cet objet.
+    //Faire pareil pour les Textarea.
+    this.questionsReponsesRadio = {
+      suiviFormation: {
+        'question': 'Pour quelle raison avez-vous suivi cette formation ?',
+        'reponse': ''
+      },
+      satisfactionFormation: {
+        'question': 'A l\'issu de ce stage, êtes-vous ?',
+        'reponse': ''
+      },
+      approfondissementFormation: {
+        'question': 'Cette formation mérite-elle des approfondissements ?',
+        'reponse': '',
+        'details': ''
+      },
+      dureeFormation: {
+        'question': 'Que pensez-vous de la durée de la formation ?',
+        'reponse': ''
+      },
+      ecouteFormation: {
+        'question': 'Comment jugez-vous la capacité du formateur à répondre clairement à vos interrogations ?',
+        'reponse': ''
+      },
+      competencesFormation: {
+        'question': 'Comment évaluez-vous les compétences démontrées par le formateur ?',
+        'reponse': ''
+      },
+      phasesFormation: {
+        'question': 'Que pensez-vous de l\'articulation entre les phases de pratique et de théorie ?',
+        'reponse': ''
+      },
+      environnementFormation: {
+        'question': 'Que pouvez-vous dire sur l\'environnement du stage (locaux, installation du lieu, ...)',
+        'reponse': ''
+      },
+      outilsFormation: {
+        'question': 'La qualité des outils pédagogiques mis à disposition vous semble-t-elle efficace ?',
+        'details': ''
+      },
     };
   }
 
@@ -81,10 +142,13 @@ export class QuestionnaireFormComponent implements OnInit {
     form.reset();
   }
 
-  //Enregistre la valeur choisie sur le radiobutton dans l'objet reponsesRadio
-  //avec comme une clé identificatrice.
-  storeValue(event: any, key: string) {
-    this.reponsesRadio[key] = event.target.value;
+  storeValueRadio(event: any, object: any, property: string) {
+    object[property] = event.target.value;
   }
 
+  storeValueArea(event: any, key: string) {
+    this.reponsesTextarea[key] = event.value;
+  }
 }
+
+
