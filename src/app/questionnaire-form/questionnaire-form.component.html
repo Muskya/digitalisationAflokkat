@@ -13,21 +13,22 @@
       <div class="form-group row">
         <div class="col-xs-2">
           <label for="nomInput">Nom</label>
-          <input class="form-control" type="text" id="nomInput" name="nom" [(ngModel)]="nomEleve" #nom="ngModel" required>
+          <input class="form-control" type="text" id="nomInput" name="nom" [(ngModel)]="nomEleve" #nom="ngModel" optional>
         </div>
         <div class="col-xs-2">
           <label for="prenomInput">Prénom</label>
-          <input class="form-control" type="text" id="prenomInput" name="prenom" [(ngModel)]="prenomEleve" #prenom="ngModel" required>
+          <input class="form-control" type="text" id="prenomInput" name="prenom" [(ngModel)]="prenomEleve"
+                value="..." #prenom="ngModel" optional>
         </div>
       </div>
 
       <!-- VALIDATION PRENOM NOM -->
-      <div *ngIf="nom.invalid && (nom.touched || nom.dirty)">
+      <div *ngIf="formulaire.submitted && !nom">
         <div style="width: 17%; padding: 10px" class="alert alert-danger">
           Vous devez entrer un nom.
         </div>
       </div>
-      <div *ngIf="prenom.invalid && (prenom.touched || prenom.dirty)">
+      <div *ngIf="formulaire.submitted && !prenom">
         <div style="width: 20%; padding: 10px" class="alert alert-danger">
           Vous devez entrer un prénom.
         </div>
@@ -65,27 +66,26 @@
       <div class="col-xs-3">
         <b>Nom du formateur</b>
         <input class="form-control" type="text" id="nomFormateurId" name="nomFormateur" [(ngModel)]="nomFormateur"
-                        #formateur="ngModel" required>
+                        #nformateur="ngModel" required>
       </div>
-      <div class="col-xs-4">
-        <b>Intitulé de la formation</b>
-        <input class="form-control" type="text" id="nomFormationId" name="nomFormation" [(ngModel)]="nomFormation"
-                        #formation="ngModel" required>
+      <div class="col-xs-3">
+        <b>Prénom du formateur</b>
+        <input class="form-control" type="text" id="prenomFormateurId" name="prenomFormateur" [(ngModel)]="prenomFormateur"
+               #pformateur="ngModel" required>
       </div>
     </div>
+    <div class="form-group-row" style="padding-left: 0%">
+        <div class="col-xs-4">
+          <b>Intitulé de la formation</b>
+          <input class="form-control" type="text" id="nomFormationId" name="nomFormation" [(ngModel)]="nomFormation"
+                 #formation="ngModel" required>
+        </div>
+    </div> <br> <br> <br> <br>
     <!-- VALIDATION FORMATEUR FORMATION -->
-    <div style="width: 25%; padding: 10px" class="alert alert-danger"
-         *ngIf="formateur.invalid && (formateur.touched || formateur.dirty)">
-        Vous devez rentrer un nom de formateur.
-    </div>
-    <div style="width: 25%; padding: 10px" class="alert alert-danger"
-         *ngIf="formation.invalid && (formation.touched || formation.dirty)">
-        Vous devez rentrer un intitulé de formation.
-    </div>
 
     <!-- RADIO RAISON SUIVI DE LA FORMATION -->
     <b>{{questionsReponsesRadio.suiviFormation['question']}}</b>
-    <div class="form-group">
+    <div class="form-group-row">
       <div *ngFor="let options of radioRaisonFormation" class="form-check">
           <input (change)="storeValueRadio($event, questionsReponsesRadio.suiviFormation, 'reponse')"
                  class="form-check-input" type="radio" value="{{options}}" name="raisonSuiviRadio">
@@ -93,9 +93,6 @@
       </div>
     </div>
     <!-- VALIDATION SUIVI FORMATION RADIO -->
-    <div style="width: 25%; padding: 10px" class="alert alert-danger">
-      Veuillez choisir une des options.
-    </div>
 
     <!-- RADIO SATISFACTION DE LA FORMATION -->
     <b>{{questionsReponsesRadio.satisfactionFormation['question']}}</b> <br>
@@ -109,38 +106,42 @@
     <!-- VALIDATION SATISFACTION FORMATION RADIO -->
 
     <!-- TEXTAREA DETAILS INSATISFACTION FORMATION -->
+    <b>{{questionsReponsesTextarea.insatisfactionFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="insatisfactionDetails">En cas d’insatisfaction, pourquoi cette formation n’a pas répondue à vos besoins ?</label>
-        <textarea class="form-control" id="insatisfactionDetails" rows="3" name="areaInsatisfaction"
-                  [(ngModel)]="reponsesTextarea['areaInsatisfaction']" #areaInsatisfaction="ngModel" required> </textarea>
+        <textarea class="form-control" id="insatisfactionDetails" rows="3" name="instatisfactionFormation"
+        [(ngModel)]="questionsReponsesTextarea.insatisfactionFormation['reponse']" #insatisfaction="ngModel" required>
+        </textarea>
       </div>
     </div>
 
     <!-- TEXTAREA DETAILS OBJECTIFS CLAIREMENT DEFINIS -->
+    <b>{{questionsReponsesTextarea.objectifsFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="objectifsClairs">Selon vous, les objectifs de la formation ont- ils été clairement formulés en début de session ?</label>
-        <textarea class="form-control" id="objectifsClairs" rows="3" name="areaObjectifs"
-        [(ngModel)]="reponsesTextarea['areaObjectifs']" #areaObjectifs="ngModel" required></textarea>
+        <textarea class="form-control" id="objectifsClairs" rows="3" name="objectifsFormation"
+        [(ngModel)]="questionsReponsesTextarea.objectifsFormation['reponse']" #objectifs="ngModel" required>
+        </textarea>
       </div>
     </div>
 
     <!-- TEXTAREA DETAILS PLUS UTILE FORMATION -->
+    <b>{{questionsReponsesTextarea.utileFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="plusUtile">Qu'est-ce qui vous a paru le plus utile pendant cette formation?</label>
-        <textarea class="form-control" id="plusUtile" rows="3" name="areaPlusUtile"
-        [(ngModel)]="reponsesTextarea['areaPlusUtile']" #areaPlusUtile="ngModel" required></textarea>
+        <textarea class="form-control" id="plusUtile" rows="3" name="utileFormation" required
+        [(ngModel)]="questionsReponsesTextarea.utileFormation['reponse']" #utile="ngModel">
+        </textarea>
       </div>
     </div>
 
     <!-- TEXTAREA DETAILS INTERETS NEGATIF -->
+    <b>{{questionsReponsesTextarea.nonInteretFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="nonInteret">Quels points n’ont pas retenu votre intérêt ?</label>
-        <textarea class="form-control" id="nonInteret" rows="3" name="areaInterets"
-        [(ngModel)]="reponsesTextarea['areaInterets']" #areaInterets="ngModel" required></textarea>
+        <textarea class="form-control" id="nonInteret" rows="3" name="nonInteretFormation"
+        [(ngModel)]="questionsReponsesTextarea.nonInteretFormation['reponse']" #nonInteret="ngModel" required>
+        </textarea>
       </div>
     </div>
 
@@ -235,25 +236,26 @@
     <!-- VALIDATION OUTILS RADIO -->
 
     <!-- TEXTAREA CHANGEMENTS FORMATION POSSIBLES -->
+    <b>{{questionsReponsesTextarea.changementsFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="changementsFormation">Quelles changements pouvons nous faire pour permettre d’améliorer ou de rendre plus
-          agréable cette formation ?</label>
-        <textarea class="form-control" id="changementsFormation" rows="3" name="areaChangements"
-        [(ngModel)]="reponsesTextarea['areaChangements']" #areaChangements="ngModel" required></textarea>
+        <textarea class="form-control" id="changementsFormation" rows="3" name="changementsFormation"
+        [(ngModel)]="questionsReponsesTextarea.changementsFormation['reponse']" #changements="ngModel" required>
+        </textarea>
       </div>
     </div>
 
     <!-- TEXTAREA RECOMMANDATION FORMATION -->
+    <b>{{questionsReponsesTextarea.recommandationFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <label for="recommandationFormation">Recommanderiez-vous cette formation à un collègue ?</label>
-        <textarea class="form-control" id="recommandationFormation" rows="3" name="areaRecommandations"
-        [(ngModel)]="reponsesTextarea['areaRecommandations']" #areaRecommandations="ngModel" required></textarea>
+        <textarea class="form-control" id="recommandationFormation" rows="3" name="recommandationFormation"
+        [(ngModel)]="questionsReponsesTextarea.recommandationFormation['reponse']" #recommandation="ngModel" required>
+        </textarea>
       </div>
     </div>
 
-    <button class="btn btn-success" type="submit" [disabled]="formulaire.form.invalid" name="btnSubmit" id="btnSubmit" >
+    <button class="btn btn-success" type="submit" name="btnSubmit" id="btnSubmit">
       Envoyer
     </button>
   </form>
