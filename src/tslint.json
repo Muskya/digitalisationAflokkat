@@ -15,7 +15,8 @@
         ],
         "no-trailing-whitespace": [
           true,
-          "ignore-comments"
+          "ignore-comments",
+          "ignore-blank-lines"
         ]
     }
 }

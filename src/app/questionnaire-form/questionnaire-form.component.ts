@@ -95,11 +95,13 @@ export class QuestionnaireFormComponent implements OnInit {
     this.questionsReponsesRadio = {
       suiviFormation: {
         'question': 'Pour quelle raison avez-vous suivi cette formation ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       satisfactionFormation: {
         'question': 'A l\'issu de ce stage, êtes-vous ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       approfondissementFormation: {
         'question': 'Cette formation mérite-elle des approfondissements ?',
@@ -108,26 +110,32 @@ export class QuestionnaireFormComponent implements OnInit {
       },
       dureeFormation: {
         'question': 'Que pensez-vous de la durée de la formation ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       ecouteFormation: {
         'question': 'Comment jugez-vous la capacité du formateur à répondre clairement à vos interrogations ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       competencesFormation: {
         'question': 'Comment évaluez-vous les compétences démontrées par le formateur ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       phasesFormation: {
         'question': 'Que pensez-vous de l\'articulation entre les phases de pratique et de théorie ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       environnementFormation: {
         'question': 'Que pouvez-vous dire sur l\'environnement du stage (locaux, installation du lieu, ...)',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Aucun'
       },
       outilsFormation: {
         'question': 'La qualité des outils pédagogiques mis à disposition vous semble-t-elle efficace ?',
+        'reponse': '',
         'details': ''
       },
     };
@@ -168,29 +176,71 @@ export class QuestionnaireFormComponent implements OnInit {
     // Reset de tous les champs du formulaire
     this.formulaireEnvove = true;
 
-    //POST DU NOM, PRENOM, MAIL
     this.postEleve = this.http.post('http://localhost:3000/api/eleves', {
       "nom": this.nomEleve,
       "prenom": this.prenomEleve,
       "email": this.mailEleve,
     }).subscribe(
       res => {
+
         this.idEleve = res.id;
 
-        //BOUCLE A FAIRE POUR CHAQUE RADIO DU FORMULAIRE + BOUCLE POUR LES TEXTAREA
-        this.postQuestionReponse = this.http.post('http://localhost:3000/api/questions_reponses', {
-          "question": this.questionsReponsesRadio.satisfactionFormation['question'],
-          "reponse": this.questionsReponsesRadio.satisfactionFormation['reponse'],
-          "id_eleve": this.idEleve
-        }) .subscribe(
-          resul => {
-            console.log(resul);
-          },
-          err => {
-            console.log("La requête formation n'a pas pu être réalisée.");
-          }
-        );
+        //Tableaux contenant les différentes questions, réponses et détails
+        var questionsRadio = [], questionsArea = [];
+        var reponsesRadio = [], reponsesArea = [];
+        var detailsRadio = [];
 
+        //REMPLISSAGE DES TABLEAUX DE PROPRIETES DES CHAMPS RADIO
+        for (const champ in this.questionsReponsesRadio) {
+          const champObjet = this.questionsReponsesRadio[champ];
+          //console.log(champObjet.question);
+
+          questionsRadio.push(champObjet.question);
+          reponsesRadio.push(champObjet.reponse);
+          detailsRadio.push(champObjet.details);
+        }
+
+        //REQUETES POST DES CHAMPS RADIO
+        for (var i = 0; i < questionsRadio.length; i++) { //Pour chaque champ radio
+          this.postQuestionReponse = this.http.post('http://localhost:3000/api/questions_reponses', {
+            "question": questionsRadio[i],
+            "reponse": reponsesRadio[i],
+            "details": detailsRadio[i],
+            "id_eleve": this.idEleve
+          }) .subscribe(
+            resultat => {
+              console.log(resultat);
+            },
+            erreur => {
+              console.log("La requête n'a pas fonctionné.");
+            }
+          )
+        }
+
+        //REMPLISSAGE DES TABLEAUX DE PROPRIETES DES CHAMPS TEXTAREA
+        for (const champ in this.questionsReponsesTextarea) {
+          const champObjet = this.questionsReponsesTextarea[champ];
+          //console.log(champObjet.question);
+
+          questionsArea.push(champObjet.question);
+          reponsesArea.push(champObjet.reponse);
+        }
+
+        //REQUETES POST DES CHAMPS TEXTAREA
+        for (var i = 0; i < questionsArea.length; i++) {
+          this.postQuestionReponse = this.http.post('http://localhost:3000/api/questions_reponses', {
+            "question": questionsArea[i],
+            "reponse": reponsesArea[i],
+            "id_eleve": this.idEleve
+          }) .subscribe(
+            resultat => {
+              console.log(resultat);
+            },
+            erreur => {
+              console.log("La requête n'a pas fonctionné.");
+            }
+          )
+        }
       },
       err => {
         console.log("La requête nom prénom mail id n'a pas pu être réalisée.", err);
@@ -212,11 +262,11 @@ export class QuestionnaireFormComponent implements OnInit {
     this.postFormation = this.http.post('http://localhost:3000/api/formations', {
       "intitule": this.nomFormation,
     }) .subscribe(
-        res => {
-          console.log(res);
-        },
+      res => {
+        console.log(res);
+      },
       err => {
-          console.log("La requête formation n'a pas pu être réalisée.");
+        console.log("La requête formation n'a pas pu être réalisée.");
       }
     );
   }

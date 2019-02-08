@@ -169,6 +169,17 @@
     </div>
     <!-- VALIDATION APPROFONDISSEMENT RADIO -->
 
+    <!-- RADIO DUREE FORMATION -->
+    <b>{{questionsReponsesRadio.dureeFormation['question']}}</b>
+    <div class="form-group" id="dureeFormat">
+      <div *ngFor="let duree of radioDureeFormation" class="checkbox-inline">
+        <input (change)="storeValueRadio($event, questionsReponsesRadio.dureeFormation, 'reponse')"
+               class="form-check-input" type="radio" name="dureeFormation" value="{{duree}}">
+        <span style="font-weight: normal">{{duree}}</span>
+      </div>
+    </div>
+    <!-- VALIDATION DUREE RADIO -->
+
     <!-- RADIO ECOUTE PROFESSEUR -->
     <b>{{questionsReponsesRadio.ecouteFormation['question']}}</b>
     <div class="form-group">
