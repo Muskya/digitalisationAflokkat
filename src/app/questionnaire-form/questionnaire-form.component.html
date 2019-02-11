@@ -1,6 +1,5 @@
 <div class="container">
   <h1 style="font-weight: bold"> Questionnaire d'évaluation à chaud </h1>
-
   <form autocomplete="off" name="formQuestionnaire" #formulaire="ngForm" (ngSubmit)="onSubmit(formulaire)">
 
     <!-- CHAMP ENVOI REUSSI -->
@@ -17,8 +16,9 @@
         </div>
         <div class="col-xs-2">
           <label for="prenomInput">Prénom</label>
-          <input class="form-control" type="text" id="prenomInput" name="prenom" [(ngModel)]="prenomEleve"
-                value="..." #prenom="ngModel" optional>
+          <input class="form-control" type="text" id="prenomInput"
+                 name="prenom" [(ngModel)]="prenomEleve"
+                 value="..." #prenom="ngModel" optional>
         </div>
       </div>
 
@@ -34,7 +34,6 @@
         </div>
       </div>
     </div>
-
     <!-- BOUTON D'ANONYMAT -->
     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseSensi"
             aria-expanded="false" aria-controls="collapseSensi">
@@ -52,11 +51,9 @@
       </div>
     </div>
     <!-- VALIDATION CHAMP EMAIL -->
-    <div *ngIf="email.invalid && (email.touched || email.dirty)">
+    <div>
       <div style="width: 25%; padding: 10px" class="alert alert-danger">
-        <div *ngIf="email.errors?.required">
-          Vous devez entrer une adresse e-mail.
-        </div>
+        Veuillez entrer une adresse email valide.
         <!-- Autres types d'erreur ... ? -->
       </div>
     </div>
@@ -88,7 +85,7 @@
     <div class="form-group-row">
       <div *ngFor="let options of radioRaisonFormation" class="form-check">
           <input (change)="storeValueRadio($event, questionsReponsesRadio.suiviFormation, 'reponse')"
-                 class="form-check-input" type="radio" value="{{options}}" name="raisonSuiviRadio">
+                   class="form-check-input" type="radio" value="{{options}}" name="raisonSuiviRadio">
           <span style="font-weight: normal"> {{options}}</span>
       </div>
     </div>
@@ -110,10 +107,11 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <textarea class="form-control" id="insatisfactionDetails" rows="3" name="instatisfactionFormation"
-        [(ngModel)]="questionsReponsesTextarea.insatisfactionFormation['reponse']" #insatisfaction="ngModel" required>
+        [(ngModel)]="questionsReponsesTextarea.insatisfactionFormation['reponse']">
         </textarea>
       </div>
     </div>
+    <p>Contenu ['insatisfactionFormation']['reponse'] : {{questionsReponsesTextarea.insatisfactionFormation['reponse']}}</p>
 
     <!-- TEXTAREA DETAILS OBJECTIFS CLAIREMENT DEFINIS -->
     <b>{{questionsReponsesTextarea.objectifsFormation['question']}}</b>
@@ -129,7 +127,7 @@
     <b>{{questionsReponsesTextarea.utileFormation['question']}}</b>
     <div class="form-group row">
       <div class="col-xs-7">
-        <textarea class="form-control" id="plusUtile" rows="3" name="utileFormation" required
+        <textarea class="form-control" id="plusUtile" rows="3" name="utileFormation" optional
         [(ngModel)]="questionsReponsesTextarea.utileFormation['reponse']" #utile="ngModel">
         </textarea>
       </div>
@@ -140,13 +138,13 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <textarea class="form-control" id="nonInteret" rows="3" name="nonInteretFormation"
-        [(ngModel)]="questionsReponsesTextarea.nonInteretFormation['reponse']" #nonInteret="ngModel" required>
+        [(ngModel)]="questionsReponsesTextarea.nonInteretFormation['reponse']" #nonInteret="ngModel" optional>
         </textarea>
       </div>
     </div>
 
     <!-- RADIO APPROFONDISSEMENTS FORMATION -->
-    <b>{{questionsReponsesRadio.approfondissementFormation['question']}}</b>
+    <b>{{questionsReponsesRadio['approfondissementFormation']['question']}}</b>
     <div class="form-group" id="approfFormation">
       <div class="form-check form-check-inline">
         <input (change)="storeValueRadio($event, questionsReponsesRadio.approfondissementFormation, 'reponse')"
@@ -154,10 +152,11 @@
                value="Oui">
         <label class="form-check-label" for="approfondissementsFormation1">
           <span style="font-weight: normal"> Oui, lesquels ? </span>
-          <input type="text" name="detailsApprof" [(ngModel)]="questionsReponsesRadio.approfondissementFormation['details']"
-                 #detailsApprof="ngModel" required style="width: 60%">
+          <input type="text" name="detailsApprof" [(ngModel)]="questionsReponsesRadio['approfondissementFormation']['details']"
+                 style="width: 60%">
         </label>
       </div>
+      <p>{{questionsReponsesRadio['approfondissementFormation']['details'] }}</p>
       <div class="form-check form-check-inline">
         <input (change)="storeValueRadio($event, questionsReponsesRadio.approfondissementFormation, 'reponse')"
                class="form-check-input"  type="radio" name="approfondissementsFormation" id="approfondissementsFormation2"
@@ -251,7 +250,7 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <textarea class="form-control" id="changementsFormation" rows="3" name="changementsFormation"
-        [(ngModel)]="questionsReponsesTextarea.changementsFormation['reponse']" #changements="ngModel" required>
+        [(ngModel)]="questionsReponsesTextarea.changementsFormation['reponse']" #changements="ngModel" optional>
         </textarea>
       </div>
     </div>
@@ -261,10 +260,12 @@
     <div class="form-group row">
       <div class="col-xs-7">
         <textarea class="form-control" id="recommandationFormation" rows="3" name="recommandationFormation"
-        [(ngModel)]="questionsReponsesTextarea.recommandationFormation['reponse']" #recommandation="ngModel" required>
+        [(ngModel)]="questionsReponsesTextarea.recommandationFormation['reponse']" #recommandation="ngModel" optional>
         </textarea>
       </div>
     </div>
+
+    <button type="button" name="btnRequest" (click)="requests()"> Lancer requêtes </button>
 
     <button class="btn btn-success" type="submit" name="btnSubmit" id="btnSubmit">
       Envoyer

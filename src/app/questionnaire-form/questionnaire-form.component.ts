@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {type} from 'os';
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -10,13 +9,7 @@ import {type} from 'os';
 })
 export class QuestionnaireFormComponent implements OnInit {
 
-/*  httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type':  'application/json',
-    })
-  };*/
-
-  nomEleve: string
+  nomEleve: string;
   prenomEleve: string;
   mailEleve: string;
 
@@ -24,11 +17,6 @@ export class QuestionnaireFormComponent implements OnInit {
   prenomFormateur: string;
 
   nomFormation: string;
-
-  //Objet contenant la réponse (Oui/Non) + Détails si il y a des radios
-  //spéciaux du formulaire.
-  approfondissementsRadio = {};
-  outilsRadio = {};
 
   //Champs contenant les différents choix possibles pour les radios du formulaire
   radioRaisonFormation = [];
@@ -39,9 +27,8 @@ export class QuestionnaireFormComponent implements OnInit {
   radioOutilsFormation = [];
 
   //Objets contenant les questions/réponses(+ détail) de chaque champ du formulaire
-  questionsReponsesRadio = {};
-  questionsReponsesTextarea = {};
-
+  questionsReponsesRadio: any = {};
+  questionsReponsesTextarea: any = {};
   formulaireEnvove: boolean;
 
   //HTTP Requests
@@ -49,7 +36,12 @@ export class QuestionnaireFormComponent implements OnInit {
   postFormateur: any;
   postFormation: any;
   postQuestionReponse: any;
+  postFormulaire: any;
+
+  //ID des instances traitées (pour les PUT du formulaire)
   idEleve: any;
+  //idFormateur: any;
+  //idFormation: any;
 
   constructor(private http: HttpClient) {
   }
@@ -144,45 +136,68 @@ export class QuestionnaireFormComponent implements OnInit {
     this.questionsReponsesTextarea = {
       insatisfactionFormation: {
         'question': 'En cas d’insatisfaction, pourquoi cette formation n’a pas répondue à vos besoins ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       },
       objectifsFormation: {
         'question': 'Selon vous, les objectifs de la formation ont-ils été clairement formulés au début de la formation ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       },
       utileFormation: {
         'question': 'Qu\'est-ce qui vous a paru le plus utile pendant cette formation?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       },
       nonInteretFormation: {
         'question': 'Quels points n’ont pas retenu votre intérêt ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       },
       changementsFormation: {
         'question': 'Quels changements pouvons nous faire pour permettre d’améliorer ou de rendre plus\n' +
           'agréable cette formation ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       },
       recommandationFormation: {
         'question': 'Recommanderiez-vous cette formation à un collègue ?',
-        'reponse': ''
+        'reponse': '',
+        'details': 'Null'
       }
-
     };
   }
 
-  // S'occupe de reset le formulaire, de faire les éventuelles dernières vérifications restantes, et ... ?
   onSubmit(form: NgForm) {
     // Reset de tous les champs du formulaire
     this.formulaireEnvove = true;
 
-    this.postEleve = this.http.post('http://localhost:3000/api/eleves', {
+    form.form.reset();
+    window.scrollTo(0, 0);
+  }
+
+  //Stockage des valeurs dans les objets de questions / réponses
+  storeValueRadio(event: any, object: any, property: string) {
+    object[property] = event.target.value;
+  }
+
+  requests() {
+    console.log("-- Formulaire envoyé. --");
+
+    console.log("..Debut de la requête this.postEleve..");
+    this.http.post('http://localhost:3000/api/eleves', {
       "nom": this.nomEleve,
       "prenom": this.prenomEleve,
-      "email": this.mailEleve,
+      "email": this.mailEleve
     }).subscribe(
       res => {
 
+        console.log(res);
+        console.warn("-- Requête this.postEleve réussi. --")
+        console.log("-- Retour de la requête this.postEleve --");
+
+        //Récupère l'id de l'élève traité pour poster dans la clé étrangère
+        //de la table questions_reponses l'id de l'élève concerné
         this.idEleve = res.id;
 
         //Tableaux contenant les différentes questions, réponses et détails
@@ -191,18 +206,19 @@ export class QuestionnaireFormComponent implements OnInit {
         var detailsRadio = [];
 
         //REMPLISSAGE DES TABLEAUX DE PROPRIETES DES CHAMPS RADIO
-        for (const champ in this.questionsReponsesRadio) {
-          const champObjet = this.questionsReponsesRadio[champ];
+        for (var champ in this.questionsReponsesRadio) {
+          var champObjet = this.questionsReponsesRadio[champ];
           //console.log(champObjet.question);
 
-          questionsRadio.push(champObjet.question);
-          reponsesRadio.push(champObjet.reponse);
-          detailsRadio.push(champObjet.details);
+          questionsRadio.push(champObjet['question']);
+          reponsesRadio.push(champObjet['reponse']);
+          detailsRadio.push(champObjet['details']);
         }
 
+        console.warn("-- Début de la boucle de requête POST des Radio --");
         //REQUETES POST DES CHAMPS RADIO
         for (var i = 0; i < questionsRadio.length; i++) { //Pour chaque champ radio
-          this.postQuestionReponse = this.http.post('http://localhost:3000/api/questions_reponses', {
+          this.http.post('http://localhost:3000/api/question_reponses', {
             "question": questionsRadio[i],
             "reponse": reponsesRadio[i],
             "details": detailsRadio[i],
@@ -212,7 +228,7 @@ export class QuestionnaireFormComponent implements OnInit {
               console.log(resultat);
             },
             erreur => {
-              console.log("La requête n'a pas fonctionné.");
+              console.log("Une des requêtes des radio n'a pas fonctionné.");
             }
           )
         }
@@ -226,9 +242,10 @@ export class QuestionnaireFormComponent implements OnInit {
           reponsesArea.push(champObjet.reponse);
         }
 
+        console.warn("-- Début de la boucle de requête POST des textareas --");
         //REQUETES POST DES CHAMPS TEXTAREA
         for (var i = 0; i < questionsArea.length; i++) {
-          this.postQuestionReponse = this.http.post('http://localhost:3000/api/questions_reponses', {
+          this.http.post('http://localhost:3000/api/question_reponses', {
             "question": questionsArea[i],
             "reponse": reponsesArea[i],
             "id_eleve": this.idEleve
@@ -237,13 +254,18 @@ export class QuestionnaireFormComponent implements OnInit {
               console.log(resultat);
             },
             erreur => {
-              console.log("La requête n'a pas fonctionné.");
+              console.log("Une des requêtes textarea n'a pas fonctionné.");
             }
           )
         }
+
+        //REQUETE POST FORMULAIRE
+
+
       },
       err => {
-        console.log("La requête nom prénom mail id n'a pas pu être réalisée.", err);
+        console.error("La requête nom prénom mail id n'a pas pu être réalisée.");
+        console.log(err);
       }
     );
 
@@ -269,11 +291,6 @@ export class QuestionnaireFormComponent implements OnInit {
         console.log("La requête formation n'a pas pu être réalisée.");
       }
     );
-  }
-
-  //Stockage des valeurs dans les objets de questions / réponses
-  storeValueRadio(event: any, object: any, property: string) {
-    object[property] = event.target.value;
   }
 }
 
