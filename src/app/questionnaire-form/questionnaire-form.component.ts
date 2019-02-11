@@ -292,6 +292,26 @@ export class QuestionnaireFormComponent implements OnInit {
       }
     );
   }
+
+  //Retourne la date du jour.
+  todayDate() {
+    var today: any = new Date();
+    var dd: any = today.getDate();
+    var mm: any = today.getMonth()+1; //January is 0!
+    var yyyy: any = today.getFullYear();
+
+    if(dd<10) {
+     dd = '0'+dd
+    }
+
+    if(mm<10) {
+     mm = '0'+mm
+    }
+
+    today = yyyy + '/' + mm + '/' + dd;
+
+    return today;
+  }
 }
 
 
