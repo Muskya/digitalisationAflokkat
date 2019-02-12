@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {url} from 'inspector';
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -40,8 +41,9 @@ export class QuestionnaireFormComponent implements OnInit {
 
   //ID des instances traitées (pour les PUT du formulaire)
   idEleve: any;
-  //idFormateur: any;
-  //idFormation: any;
+  idFormateur: any;
+  idFormation: any;
+  idFormulaire: any;
 
   constructor(private http: HttpClient) {
   }
@@ -181,7 +183,7 @@ export class QuestionnaireFormComponent implements OnInit {
     object[property] = event.target.value;
   }
 
-  requests() {
+  requestsStarter() {
     console.log("-- Formulaire envoyé. --");
 
     console.log("..Debut de la requête this.postEleve..");
@@ -198,7 +200,9 @@ export class QuestionnaireFormComponent implements OnInit {
 
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
-        this.idEleve = res.id;
+        if (res.id != null) {
+          this.idEleve = res.id;
+        }
 
         //Tableaux contenant les différentes questions, réponses et détails
         var questionsRadio = [], questionsArea = [];
@@ -223,7 +227,7 @@ export class QuestionnaireFormComponent implements OnInit {
             "reponse": reponsesRadio[i],
             "details": detailsRadio[i],
             "id_eleve": this.idEleve
-          }) .subscribe(
+          }).subscribe(
             resultat => {
               console.log(resultat);
             },
@@ -249,7 +253,7 @@ export class QuestionnaireFormComponent implements OnInit {
             "question": questionsArea[i],
             "reponse": reponsesArea[i],
             "id_eleve": this.idEleve
-          }) .subscribe(
+          }).subscribe(
             resultat => {
               console.log(resultat);
             },
@@ -259,8 +263,25 @@ export class QuestionnaireFormComponent implements OnInit {
           )
         }
 
-        //REQUETE POST FORMULAIRE
+        //REQUETE POST FORMULAIRE (Première)
+        this.http.post('http://localhost:3000/api/formulaires', {
+          "date_completion": this.todayDate(),
+          "id_eleve": this.idEleve
+        }).subscribe(
+          result => {
 
+            if (result.id != null) {
+              this.idFormulaire = result.id;
+            }
+            console.warn("Requête POST Formulaire réussie" + result);
+          },
+          error => {
+            console.log("Requête POST Formulaire ratée" + error);
+          }
+        )
+
+        this.requestFormateur();
+        this.requestFormation();
 
       },
       err => {
@@ -268,48 +289,60 @@ export class QuestionnaireFormComponent implements OnInit {
         console.log(err);
       }
     );
-
-    this.postFormateur = this.http.post('http://localhost:3000/api/formateurs', {
-      "nom": this.nomFormateur,
-      "prenom": this.prenomFormateur
-    }) .subscribe(
-      res => {
-        console.log(res);
-      },
-      err => {
-        console.log("La requête formateur n'a pas pu être réalisée.");
-      }
-    );
-
-    this.postFormation = this.http.post('http://localhost:3000/api/formations', {
-      "intitule": this.nomFormation,
-    }) .subscribe(
-      res => {
-        console.log(res);
-      },
-      err => {
-        console.log("La requête formation n'a pas pu être réalisée.");
-      }
-    );
   }
+
+    requestFormateur() {
+      this.http.post('http://localhost:3000/api/formateurs', {
+        "nom": this.nomFormateur,
+        "prenom": this.prenomFormateur
+      }) .subscribe(
+        res => {
+
+          if (res.id != null) {
+            this.idFormateur = res.id;
+          }
+
+          console.log(res);
+
+        },
+        err => {
+          console.log("La requête formateur n'a pas pu être réalisée.");
+        }
+      );
+    }
+
+    requestFormation() {
+      this.http.post('http://localhost:3000/api/formations', {
+        "intitule": this.nomFormation,
+      }) .subscribe(
+        res => {
+          console.log(res);
+
+          if (res.id != null) {
+            this.idFormation = res.id;
+          }
+
+        },
+        err => {
+          console.log("La requête formation n'a pas pu être réalisée.");
+        }
+      );
+    }
 
   //Retourne la date du jour.
   todayDate() {
     var today: any = new Date();
-    var dd: any = today.getDate();
-    var mm: any = today.getMonth()+1; //January is 0!
-    var yyyy: any = today.getFullYear();
+    var jj: any = today.getDate();
+    var mm: any = today.getMonth()+1; //+1 car Janvier = 0 avec .getMonth()
+    var aaaa: any = today.getFullYear();
 
-    if(dd<10) {
-     dd = '0'+dd
-    }
+    //Jour et Mois sous la forme "0x" si jour/mois < 10
+    if(jj<10)
+      jj = '0'+jj;
+    if(mm<10)
+      mm = '0'+mm;
 
-    if(mm<10) {
-     mm = '0'+mm
-    }
-
-    today = yyyy + '/' + mm + '/' + dd;
-
+    today = aaaa + '-' + mm + '-' + jj; //AAAA-MM-JJ
     return today;
   }
 }
