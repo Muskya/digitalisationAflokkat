@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {url} from 'inspector';
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -16,7 +15,6 @@ export class QuestionnaireFormComponent implements OnInit {
 
   nomFormateur: string;
   prenomFormateur: string;
-
   nomFormation: string;
 
   //Champs contenant les différents choix possibles pour les radios du formulaire
