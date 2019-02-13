@@ -10,7 +10,7 @@ import { QuestionnaireFormComponent } from './questionnaire-form/questionnaire-f
 @NgModule({
   declarations: [
     AppComponent,
-    QuestionnaireFormComponent
+    QuestionnaireFormComponent,
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
+import * as later from 'later';
+import * as cron from 'cron';
+import {CronJob, CronTime, CronJobParameters} from 'cron';
+import {send} from 'q';
+
 @Component({
   selector: 'app-questionnaire-form',
   templateUrl: './questionnaire-form.component.html',
@@ -16,6 +21,9 @@ export class QuestionnaireFormComponent implements OnInit {
   nomFormateur: string;
   prenomFormateur: string;
   nomFormation: string;
+
+  dateEnvoi: Date;
+  cronEnvoi: any;
 
   //Champs contenant les différents choix possibles pour les radios du formulaire
   radioRaisonFormation = [];
@@ -44,6 +52,10 @@ export class QuestionnaireFormComponent implements OnInit {
   idFormulaire: any;
 
   constructor(private http: HttpClient) {
+  }
+
+  testLater() {
+
   }
 
   ngOnInit() {
@@ -198,9 +210,7 @@ export class QuestionnaireFormComponent implements OnInit {
 
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
-        if (res.id != null) {
-          this.idEleve = res.id;
-        }
+
 
         //Tableaux contenant les différentes questions, réponses et détails
         var questionsRadio = [], questionsArea = [];
@@ -272,6 +282,9 @@ export class QuestionnaireFormComponent implements OnInit {
               this.idFormulaire = result.id;
             }
             console.warn("Requête POST Formulaire réussie" + result);
+
+
+
           },
           error => {
             console.log("Requête POST Formulaire ratée" + error);
@@ -320,11 +333,13 @@ export class QuestionnaireFormComponent implements OnInit {
             this.idFormation = res.id;
           }
 
+
+
         },
         err => {
           console.log("La requête formation n'a pas pu être réalisée.");
         }
-      );
+      )
     }
 
   //Retourne la date du jour.
@@ -334,6 +349,9 @@ export class QuestionnaireFormComponent implements OnInit {
     var mm: any = today.getMonth()+1; //+1 car Janvier = 0 avec .getMonth()
     var aaaa: any = today.getFullYear();
 
+    //+1 car Janvier = 0 et + 3 car 3 mois plus tard. +4
+    var troisMois: any = today.getMonth()+4
+
     //Jour et Mois sous la forme "0x" si jour/mois < 10
     if(jj<10)
       jj = '0'+jj;
@@ -341,6 +359,16 @@ export class QuestionnaireFormComponent implements OnInit {
       mm = '0'+mm;
 
     today = aaaa + '-' + mm + '-' + jj; //AAAA-MM-JJ
+
+    this.dateEnvoi = new Date(2019, 2,13, 16,59, 59);
+
+    var cronDate: any = "0 12 * "+troisMois.toString()+" *"; //à 12h00, 3 mois après la date de complétion
+
+    this.cronEnvoi = new CronJob(this.dateEnvoi, function () {
+      console.log("Message");
+      //envoi du mail
+    }, null, true, 'Europe/Paris');
+
     return today;
   }
 }
