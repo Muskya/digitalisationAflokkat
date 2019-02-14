@@ -1,11 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-
-import * as later from 'later';
-import * as cron from 'cron';
 import {CronJob, CronTime, CronJobParameters} from 'cron';
-import {send} from 'q';
 
 @Component({
   selector: 'app-questionnaire-form',
@@ -37,14 +33,6 @@ export class QuestionnaireFormComponent implements OnInit {
   //Objets contenant les questions/réponses(+ détail) de chaque champ du formulaire
   questionsReponsesRadio: any = {};
   questionsReponsesTextarea: any = {};
-  formulaireEnvove: boolean;
-
-  //HTTP Requests
-  postEleve: any;
-  postFormateur: any;
-  postFormation: any;
-  postQuestionReponse: any;
-  postFormulaire: any;
 
   //ID des instances traitées (pour les PUT du formulaire)
   idEleve: any;
@@ -52,13 +40,13 @@ export class QuestionnaireFormComponent implements OnInit {
   idFormation: any;
   idFormulaire: any;
 
-  constructor(private http: HttpClient) {
-  }
+  //Autres
+  formulaireEnvove: boolean;
 
-  testLater() {
+  //Service HttpClient injecté
+  constructor(private http: HttpClient) { }
 
-  }
-
+  //Initialisation des propriétés / objets
   ngOnInit() {
     this.formulaireEnvove = false;
 
@@ -185,6 +173,10 @@ export class QuestionnaireFormComponent implements OnInit {
     // Reset de tous les champs du formulaire
     this.formulaireEnvove = true;
 
+    //Appel des requêtes
+    this.requestsStarter();
+
+    //Réinitialise le formulaire et remonte en haut de la page
     form.form.reset();
     window.scrollTo(0, 0);
   }
@@ -194,10 +186,12 @@ export class QuestionnaireFormComponent implements OnInit {
     object[property] = event.target.value;
   }
 
+  //Démarre les différentes requêtes HTTP
   requestsStarter() {
-    console.log("-- Formulaire envoyé. --");
 
+    console.log("-- Formulaire envoyé. --");
     console.log("..Debut de la requête this.postEleve..");
+
     this.http.post('http://localhost:3000/api/eleves', {
       "nom": this.nomEleve,
       "prenom": this.prenomEleve,
@@ -211,6 +205,7 @@ export class QuestionnaireFormComponent implements OnInit {
 
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
+        //Evite les erreurs de compilation
         if (res.hasOwnProperty("id")) {
           this.idEleve = res.id;
         }
@@ -281,19 +276,19 @@ export class QuestionnaireFormComponent implements OnInit {
         }).subscribe(
           result => {
 
+            //Evite les erreurs de compilation
             if (result.hasOwnProperty("id")) {
               this.idFormulaire = result.id;
             }
             console.warn("Requête POST Formulaire réussie" + result);
-
-
-
           },
           error => {
             console.log("Requête POST Formulaire ratée" + error);
           }
         )
 
+        //Appel des autres requêtes dans le retour du Post formulaire
+        //Aucune raison particulière
         this.requestFormateur();
         this.requestFormation();
 
@@ -305,6 +300,7 @@ export class QuestionnaireFormComponent implements OnInit {
     );
   }
 
+    //REQUETE POST INFOS DU PROFESSEUR
     requestFormateur() {
       this.http.post('http://localhost:3000/api/formateurs', {
         "nom": this.nomFormateur,
@@ -312,12 +308,11 @@ export class QuestionnaireFormComponent implements OnInit {
       }) .subscribe(
         res => {
 
+          //Evite les erreurs de compilation
           if (res.hasOwnProperty("id")) {
             this.idFormateur = res.id;
           }
-
           console.log(res);
-
         },
         err => {
           console.log("La requête formateur n'a pas pu être réalisée.");
@@ -325,6 +320,7 @@ export class QuestionnaireFormComponent implements OnInit {
       );
     }
 
+    //REQUETE POST LES INFOS DE LA FORMATION
     requestFormation() {
       this.http.post('http://localhost:3000/api/formations', {
         "intitule": this.nomFormation,
@@ -332,6 +328,7 @@ export class QuestionnaireFormComponent implements OnInit {
         res => {
           console.log(res);
 
+          //Evite les erreurs de compilation
           if (res.hasOwnProperty("id")) {
             this.idFormation = res.id;
           }
@@ -342,7 +339,9 @@ export class QuestionnaireFormComponent implements OnInit {
       )
     }
 
-  //Retourne la date du jour.
+  //Retourne la date du jour pour la date de complétion du formulaire
+  //Création du CronJob à partir de la date de complétion du form + 3 mois
+  //+ envoi du mail.
   todayDate() {
     var today: any = new Date();
     var jj: any = today.getDate();
@@ -354,6 +353,7 @@ export class QuestionnaireFormComponent implements OnInit {
     //3 mois suivant la date de complétion du formulaire à 12h00.
     this.dateCron = "00 00 12 " + this.moisCron.toString() + " * *";
 
+    //CronJob envoyant le mail 3 mois plus tard.
     this.cronEnvoi = new CronJob(this.dateCron, function () {
       console.log("Message");
       //envoi du mail
@@ -365,6 +365,7 @@ export class QuestionnaireFormComponent implements OnInit {
     if(mm<10)
       mm = '0'+mm;
 
+    //Mise en forme de la date du jour (requis pour le format "date" de MySQL)
     today = aaaa + '-' + mm + '-' + jj; //AAAA-MM-JJ
 
     return today;
