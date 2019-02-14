@@ -12,14 +12,16 @@
     "importHelpers": true,
     "target": "es5",
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/emailjs"
     ],
     "lib": [
       "es2018",
       "dom"
     ],
     "types": [
-      "node"
+      "node",
+      "emailjs"
     ]
   }
 }
