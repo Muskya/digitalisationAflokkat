@@ -13,16 +13,17 @@ import {send} from 'q';
   styleUrls: ['./questionnaire-form.component.css'],
 })
 export class QuestionnaireFormComponent implements OnInit {
-
+  //Premiers inputs du formulaires
   nomEleve: string;
   prenomEleve: string;
   mailEleve: string;
-
   nomFormateur: string;
   prenomFormateur: string;
   nomFormation: string;
 
-  dateEnvoi: Date;
+  //Propriétés du CronJob pour l'envoi du mail
+  moisCron: any;
+  dateCron: any;
   cronEnvoi: any;
 
   //Champs contenant les différents choix possibles pour les radios du formulaire
@@ -210,7 +211,9 @@ export class QuestionnaireFormComponent implements OnInit {
 
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
-
+        if (res.hasOwnProperty("id")) {
+          this.idEleve = res.id;
+        }
 
         //Tableaux contenant les différentes questions, réponses et détails
         var questionsRadio = [], questionsArea = [];
@@ -278,7 +281,7 @@ export class QuestionnaireFormComponent implements OnInit {
         }).subscribe(
           result => {
 
-            if (result.id != null) {
+            if (result.hasOwnProperty("id")) {
               this.idFormulaire = result.id;
             }
             console.warn("Requête POST Formulaire réussie" + result);
@@ -309,7 +312,7 @@ export class QuestionnaireFormComponent implements OnInit {
       }) .subscribe(
         res => {
 
-          if (res.id != null) {
+          if (res.hasOwnProperty("id")) {
             this.idFormateur = res.id;
           }
 
@@ -329,12 +332,9 @@ export class QuestionnaireFormComponent implements OnInit {
         res => {
           console.log(res);
 
-          if (res.id != null) {
+          if (res.hasOwnProperty("id")) {
             this.idFormation = res.id;
           }
-
-
-
         },
         err => {
           console.log("La requête formation n'a pas pu être réalisée.");
@@ -350,7 +350,14 @@ export class QuestionnaireFormComponent implements OnInit {
     var aaaa: any = today.getFullYear();
 
     //+1 car Janvier = 0 et + 3 car 3 mois plus tard. +4
-    var troisMois: any = today.getMonth()+4
+    this.moisCron = today.getMonth()+4
+    //3 mois suivant la date de complétion du formulaire à 12h00.
+    this.dateCron = "00 00 12 " + this.moisCron.toString() + " * *";
+
+    this.cronEnvoi = new CronJob(this.dateCron, function () {
+      console.log("Message");
+      //envoi du mail
+    }, null, true, 'Europe/Paris');
 
     //Jour et Mois sous la forme "0x" si jour/mois < 10
     if(jj<10)
@@ -359,15 +366,6 @@ export class QuestionnaireFormComponent implements OnInit {
       mm = '0'+mm;
 
     today = aaaa + '-' + mm + '-' + jj; //AAAA-MM-JJ
-
-    this.dateEnvoi = new Date(2019, 2,13, 16,59, 59);
-
-    var cronDate: any = "0 12 * "+troisMois.toString()+" *"; //à 12h00, 3 mois après la date de complétion
-
-    this.cronEnvoi = new CronJob(this.dateEnvoi, function () {
-      console.log("Message");
-      //envoi du mail
-    }, null, true, 'Europe/Paris');
 
     return today;
   }
