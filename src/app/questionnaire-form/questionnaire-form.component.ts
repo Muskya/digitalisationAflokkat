@@ -3,14 +3,11 @@ import {Form, FormGroup, FormsModule, NgForm} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {CronJob, CronTime, CronJobParameters} from 'cron';
 
-import * as nodemailer from 'nodemailer'
-
 @Component({
   selector: 'app-questionnaire-form',
   templateUrl: './questionnaire-form.component.html',
   styleUrls: ['./questionnaire-form.component.css'],
 })
-
 export class QuestionnaireFormComponent implements OnInit {
   //Premiers inputs du formulaires
   nomEleve: string;
@@ -43,9 +40,6 @@ export class QuestionnaireFormComponent implements OnInit {
   idFormation: any;
   idFormulaire: any;
 
-  //Propriétés mail
-  transport: any;
-
   //Autres
   formulaireEnvove: boolean;
 
@@ -55,18 +49,6 @@ export class QuestionnaireFormComponent implements OnInit {
   //Initialisation des propriétés / objets
   ngOnInit() {
     this.formulaireEnvove = false;
-
-    this.transport = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "theoporticcio@gmail.com",
-          pass: "biloute50",
-        }
-    });
-
-
 
     // region Radio Questions
     this.radioSatisfactionFormation = [
