@@ -23,7 +23,7 @@ export class QuestionnaireFormComponent implements OnInit {
   cronEnvoi: any;
 
   //Champs contenant les différents choix possibles pour les radios du formulaire
-  radioRaisonFormation = [];
+  radioRaisonFormation = [];  
   radioDureeFormation = [];
   radioPhasesFormation = [];
   radioSatisfactionFormation = [];
@@ -82,7 +82,6 @@ export class QuestionnaireFormComponent implements OnInit {
       'Oui',
       'Non, lesquels ?'
     ];
-    // endregion
 
     // region Objet questionsReponsesRadio
     this.questionsReponsesRadio = {
@@ -355,8 +354,9 @@ export class QuestionnaireFormComponent implements OnInit {
 
     //CronJob envoyant le mail 3 mois plus tard.
     this.cronEnvoi = new CronJob(this.dateCron, function () {
-      console.log("Message");
-      //envoi du mail
+      
+      //.Post qui va appeler un operationhook after save qui enverra un mail
+
     }, null, true, 'Europe/Paris');
 
     //Jour et Mois sous la forme "0x" si jour/mois < 10
@@ -370,6 +370,23 @@ export class QuestionnaireFormComponent implements OnInit {
 
     return today;
   }
+
+  testMail() {
+    this.http.post('http://localhost:3000/api/mails', {
+        "a": "theoporticcio@gmail.com",
+        "de": "theorebdevtests@gmail.com",
+        "sujet": "tesssst",
+        "texte": "Bonjour je suis le corps du mail"
+      }) .subscribe(
+        res => {
+          console.log(res);
+        },
+        err => {
+          console.log("La requête envoi de mail n'a pas pu être réalisée.");
+        }
+      )
+  }
+
 }
 
 
