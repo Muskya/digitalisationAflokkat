@@ -205,6 +205,7 @@ export class QuestionnaireFormComponent implements OnInit {
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
         //Evite les erreurs de compilation
+        
         if (res.hasOwnProperty("id")) {
           this.idEleve = res.id;
         }
