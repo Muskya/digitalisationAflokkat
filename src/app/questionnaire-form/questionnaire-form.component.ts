@@ -204,10 +204,8 @@ export class QuestionnaireFormComponent implements OnInit {
 
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
-        //Evite les erreurs de compilation
-        
         if (res.hasOwnProperty("id")) {
-          this.idEleve = res.id;
+          //this.idEleve = res.id;
         }
 
         //Tableaux contenant les différentes questions, réponses et détails
@@ -374,10 +372,11 @@ export class QuestionnaireFormComponent implements OnInit {
 
   testMail() {
     this.http.post('http://localhost:3000/api/mails', {
-        "a": "theoporticcio@gmail.com",
+        "a": this.mailEleve,
         "de": "theorebdevtests@gmail.com",
-        "sujet": "tesssst",
-        "texte": "Bonjour je suis le corps du mail"
+        "sujet": "Questionnaire d'évaluation à froid",
+        "texte": "Bonjour, vous trouverez ci-joint un lien vers le nouveau" 
+        + "questionnaire d'évaluation qu'il vous faudra remplir." 
       }) .subscribe(
         res => {
           console.log(res);
