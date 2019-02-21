@@ -12,7 +12,7 @@ export class QuestionnaireFormComponent implements OnInit {
   //Premiers inputs du formulaires
   nomEleve: string;
   prenomEleve: string;
-  mailEleve: string;
+  mailEleve: string = "theoporticcio@gmail.com" //A enlever, juste pour test
   nomFormateur: string;
   prenomFormateur: string;
   nomFormation: string;
@@ -35,7 +35,7 @@ export class QuestionnaireFormComponent implements OnInit {
   questionsReponsesTextarea: any = {};
 
   //ID des instances traitées (pour les PUT du formulaire)
-  idEleve: any;
+  idEleve: any; 
   idFormateur: any;
   idFormation: any;
   idFormulaire: any;
@@ -205,7 +205,7 @@ export class QuestionnaireFormComponent implements OnInit {
         //Récupère l'id de l'élève traité pour poster dans la clé étrangère
         //de la table questions_reponses l'id de l'élève concerné
         if (res.hasOwnProperty("id")) {
-          //this.idEleve = res.id;
+          this.idEleve = res["id"]
         }
 
         //Tableaux contenant les différentes questions, réponses et détails
@@ -276,7 +276,7 @@ export class QuestionnaireFormComponent implements OnInit {
 
             //Evite les erreurs de compilation
             if (result.hasOwnProperty("id")) {
-              this.idFormulaire = result.id;
+              this.idFormulaire = result["id"];
             }
             console.warn("Requête POST Formulaire réussie" + result);
           },
@@ -308,7 +308,7 @@ export class QuestionnaireFormComponent implements OnInit {
 
           //Evite les erreurs de compilation
           if (res.hasOwnProperty("id")) {
-            this.idFormateur = res.id;
+            this.idFormateur = res["id"];
           }
           console.log(res);
         },
@@ -328,7 +328,7 @@ export class QuestionnaireFormComponent implements OnInit {
 
           //Evite les erreurs de compilation
           if (res.hasOwnProperty("id")) {
-            this.idFormation = res.id;
+            this.idFormation = res["id"];
           }
         },
         err => {
@@ -354,7 +354,7 @@ export class QuestionnaireFormComponent implements OnInit {
     //CronJob envoyant le mail 3 mois plus tard.
     this.cronEnvoi = new CronJob(this.dateCron, function () {
       
-      //.Post qui va appeler un operationhook after save qui enverra un mail
+      //Post qui va appeler un operationhook after save qui enverra un mail
 
     }, null, true, 'Europe/Paris');
 
@@ -373,10 +373,10 @@ export class QuestionnaireFormComponent implements OnInit {
   testMail() {
     this.http.post('http://localhost:3000/api/mails', {
         "a": this.mailEleve,
-        "de": "theorebdevtests@gmail.com",
-        "sujet": "Questionnaire d'évaluation à froid",
+        "de": "theorebdevtests@gmail.com", //A remplacer par adresse Aflokkat
+        "sujet": "Questionnaire d'évaluation à froid", //Ne change pas à priori
         "texte": "Bonjour, vous trouverez ci-joint un lien vers le nouveau" 
-        + "questionnaire d'évaluation qu'il vous faudra remplir." 
+        + "questionnaire d'évaluation qu'il vous faudra remplir." //Ajouter lien vers nouveau questionnaire
       }) .subscribe(
         res => {
           console.log(res);
