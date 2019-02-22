@@ -235,7 +235,7 @@ export class QuestionnaireFormComponent implements OnInit {
             resultat => {
               console.log(resultat);
             },
-            erreur => {
+            erreur => { 
               console.log("Une des requêtes des radio n'a pas fonctionné.");
             }
           )
@@ -354,7 +354,8 @@ export class QuestionnaireFormComponent implements OnInit {
     //CronJob envoyant le mail 3 mois plus tard.
     this.cronEnvoi = new CronJob(this.dateCron, function () {
       
-      //Post qui va appeler un operationhook after save qui enverra un mail
+      //Appel de la méthode envoi mail.
+      this.envoiMail(); 
 
     }, null, true, 'Europe/Paris');
 
@@ -369,8 +370,8 @@ export class QuestionnaireFormComponent implements OnInit {
 
     return today;
   }
-
-  testMail() {
+  
+  envoiMail() {
     this.http.post('http://localhost:3000/api/mails', {
         "a": this.mailEleve,
         "de": "theorebdevtests@gmail.com", //A remplacer par adresse Aflokkat
